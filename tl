@@ -71,7 +71,7 @@ FILE: for my $file (@files) {
   next if $dni->dist eq 'perl';
 
   my $by_name = $found{ $dni->dist } ||= {};
-  my $dist = $by_name->{ eval $dni->version } ||= { values => [] };
+  my $dist = $by_name->{ eval ('"'.$dni->version.'"') } ||= { values => [] };
   push @{ $dist->{values} }, $file;
 }
 
@@ -85,7 +85,7 @@ for my $key (sort keys %found) {
   my $dist = $found{ $key };
   next unless keys %$dist > 3;
 
-  my @versions = sort { $b <=> $a } keys %$dist;
+  my @versions = sort { $b cmp $a } keys %$dist;
   for my $version (map { $versions[$_] } 3 .. $#versions) {
     for my $file (@{ $dist->{ $version }{values} }) {
       print "scheduling $file for deletion\n";
